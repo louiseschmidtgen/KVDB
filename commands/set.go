@@ -1,4 +1,3 @@
-// commands/set.go
 package commands
 
 import (
@@ -14,28 +13,48 @@ func NewSetCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set",
 		Short: "Set a key-value pair",
-		Run:   Set,
+		Run:   SetCmdWrapper,
 	}
+
+	// Add an optional filename flag with default value
+	cmd.Flags().String("filename", "database/kvdb.db", "Database filename")
 	return cmd
 }
 
-func Set(cmd *cobra.Command, args []string) {
-	fmt.Printf("args: %v\n", args)
-	if len(args) != 2 {
-		fmt.Println("Usage: kvdb set <key> <value>")
+func SetCmdWrapper(cmd *cobra.Command, args []string) {
+	// Since you can not pass an error back to a cobra command from a function
+	// but I would still like to do error handling so I have added a Wrapper function
+	err := Set(cmd, args)
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+func Set(cmd *cobra.Command, args []string) error {
+	// Check command line arguments
+	if len(args) != 2 {
+		return fmt.Errorf("Usage: kvdb set <key> <value>")
 	}
 
 	key := args[0]
 	value := args[1]
 
-	db, err := database.InitKeyValueDB("database/kvdb.db")
+	filename := cmd.Flag("database").Value.String()
+
+	// Open the database
+	db, err := database.InitKeyValueDB(filename)
 	if err != nil {
-		fmt.Println("Error opening database:", err)
-		os.Exit(1)
+		return fmt.Errorf("Error opening database: %v", err)
 	}
+
+	// Close the database when the function returns
 	defer db.Close()
 
-	db.Set(key, value)
-	fmt.Printf("Key '%s' set to '%s'\n", key, value)
+	// Set the value for the key
+	err = db.Set(key, value)
+	if err != nil {
+		return fmt.Errorf("Error setting the value for %s: %v", value, err)
+	}
+
+	return nil
 }
