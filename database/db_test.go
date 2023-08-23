@@ -4,64 +4,64 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestKeyValueDB(t *testing.T) {
+	// Test InitKeyValueDB
 	db, err := InitKeyValueDB("test.db")
-	if err != nil {
-		t.Fatalf("Failed to create KeyValueDB: %v", err)
-	}
+	require.NoError(t, err)
+
+	// Close and remove the database when the function returns
 	defer os.Remove("test.db")
 	defer db.Close()
 
 	// Test Set and Get
-	db.Set("key1", "value1")
-	value, timestamp := db.Get("key1")
-	if value != "value1" {
-		t.Errorf("Expected value 'value1', got '%s'", value)
-	}
-	if len(timestamp) != 1 {
-		t.Errorf("Expected timestamp length 1, got %d", len(timestamp))
-	}
+	err = db.Set("key1", "value1")
+	require.NoError(t, err)
+
+	value, err := db.Get("key1")
+
+	require.NoError(t, err)
+	require.Equal(t, "value1", value) // Confirm that the value is correct
 
 	// Test Delete
-	db.Delete("key1")
-	_, timestamp = db.Get("key1")
-	if len(timestamp) != 0 {
-		t.Errorf("Expected timestamp length 0 after delete, got %d", len(timestamp))
-	}
+	found := db.Delete("key1")
+	require.True(t, found)
+
+	// Confirm that the key-vslue pair has been deleted
+	value, err = db.Get("key1")
+	require.ErrorContains(t, err, "not found")
 
 	// Test Timestamp
+	// Create a key-value pair
 	db.Set("key2", "value2")
 	time.Sleep(time.Millisecond) // Sleep to ensure different timestamps
+	// update the key with a new value which should update the timestamp
 	db.Set("key2", "value2_updated")
-	timestamp = db.Timestamp("key2")
-	if len(timestamp) != 2 {
-		t.Errorf("Expected timestamp length 2, got %d", len(timestamp))
-	}
-	if timestamp[0].After(timestamp[1]) {
-		t.Errorf("Expected timestamp[0] before timestamp[1]")
-	}
+	timestamp, err := db.Timestamp("key2")
+
+	require.NoError(t, err)
+	require.Len(t, timestamp, 2)                       // Confirm that there are two timestamps
+	require.True(t, timestamp[0].Before(timestamp[1])) // Confirm that the first timestamp is before the second
+
 }
 
 func TestKeyValueDB_NotFound(t *testing.T) {
 	db, err := InitKeyValueDB("test.db")
-	if err != nil {
-		t.Fatalf("Failed to create KeyValueDB: %v", err)
-	}
+	require.NoError(t, err)
+
 	defer os.Remove("test.db")
 	defer db.Close()
 
-	value, timestamp := db.Get("nonexistent_key")
-	if value != "" {
-		t.Errorf("Expected value '', got '%s'", value)
-	}
-	if timestamp != nil {
-		t.Errorf("Expected timestamp nil, got %v", timestamp)
-	}
+	// Test Get with a non-existent key
+	value, err := db.Get("nonexistent_key")
+	require.ErrorContains(t, err, "not found")
+	require.Equal(t, "", value)
 
-	timestamp = db.Timestamp("nonexistent_key")
-	if timestamp != nil {
-		t.Errorf("Expected timestamp nil, got %v", timestamp)
-	}
+	// Test Timestamp with a non-existent key
+	timestamp, err := db.Timestamp("nonexistent_key")
+	require.ErrorContains(t, err, "not found")
+	require.Nil(t, timestamp)
 }

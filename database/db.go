@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/gob"
+	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -23,13 +24,16 @@ func InitKeyValueDB(filename string) (*KeyValueDB, error) {
 		data:     make(map[string]DBEntry),
 		filename: filename,
 	}
+
 	if err := db.load(); err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }
 
 func (db *KeyValueDB) load() error {
+	// open the database file
 	file, err := os.Open(db.filename)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -39,65 +43,91 @@ func (db *KeyValueDB) load() error {
 	}
 	defer file.Close()
 
+	// decode the database file
 	decoder := gob.NewDecoder(file)
-	return decoder.Decode(&db.data)
+	err = decoder.Decode(&db.data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (db *KeyValueDB) save() error {
+	// open the database file
 	file, err := os.Create(db.filename)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
+	// encode the database file
 	encoder := gob.NewEncoder(file)
-	return encoder.Encode(db.data)
+	err = encoder.Encode(db.data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (db *KeyValueDB) Set(key, value string) {
+func (db *KeyValueDB) Set(key, value string) error {
+	// lock the database
 	db.Lock()
 	defer db.Unlock()
 
-	info := db.data[key]
-	info.Value = value
-	info.Timestamp = append(info.Timestamp, time.Now())
-	db.data[key] = info
+	// add key-value pair to database
+	dbEntry := db.data[key]
+	dbEntry.Value = value
+	dbEntry.Timestamp = append(dbEntry.Timestamp, time.Now())
+	db.data[key] = dbEntry
 
+	// save the database
 	db.save()
+	return nil
 }
 
-func (db *KeyValueDB) Get(key string) (string, []time.Time) {
+func (db *KeyValueDB) Get(key string) (string, error) {
+	// lock the database for reading
 	db.RLock()
 	defer db.RUnlock()
 
-	info, found := db.data[key]
+	// get the value for the key
+	dbEntry, found := db.data[key]
 	if !found {
-		return "", nil
+		return "", fmt.Errorf("Key %s not found", key)
 	}
-	return info.Value, info.Timestamp
+
+	return dbEntry.Value, nil
 }
 
 func (db *KeyValueDB) Delete(key string) bool {
 	db.Lock()
 	defer db.Unlock()
 
+	// delete the key-value pair from the database
 	_, found := db.data[key]
 	if found {
 		delete(db.data, key)
 		db.save()
 	}
+
 	return found
 }
 
-func (db *KeyValueDB) Timestamp(key string) []time.Time {
+func (db *KeyValueDB) Timestamp(key string) ([]time.Time, error) {
 	db.RLock()
 	defer db.RUnlock()
 
-	info, found := db.data[key]
+	// get the value for the key
+	DBEntry, found := db.data[key]
 	if !found {
-		return nil
+		return nil, fmt.Errorf("Key %s not found", key)
 	}
-	return info.Timestamp
+
+	return DBEntry.Timestamp, nil
+
 }
 
 func (db *KeyValueDB) Close() error {
