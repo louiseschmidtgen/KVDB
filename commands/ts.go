@@ -44,7 +44,7 @@ func Timestamp(cmd *cobra.Command, args []string) error {
 	filename := cmd.Flag("database").Value.String()
 	db, err := database.InitKeyValueDB(filename)
 	if err != nil {
-		return fmt.Errorf("Error opening database:", err)
+		return fmt.Errorf("error opening database: %v", err)
 
 	}
 	defer db.Close()

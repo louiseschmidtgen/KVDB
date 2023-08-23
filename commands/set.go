@@ -45,7 +45,7 @@ func Set(cmd *cobra.Command, args []string) error {
 	// Open the database
 	db, err := database.InitKeyValueDB(filename)
 	if err != nil {
-		return fmt.Errorf("Error opening database: %v", err)
+		return fmt.Errorf("error opening database: %s", err)
 	}
 
 	// Close the database when the function returns
@@ -54,7 +54,7 @@ func Set(cmd *cobra.Command, args []string) error {
 	// Set the value for the key
 	err = db.Set(key, value)
 	if err != nil {
-		return fmt.Errorf("Error setting the value for %s: %v", value, err)
+		return fmt.Errorf("error setting the value for %s: %v", value, err)
 	}
 
 	return nil

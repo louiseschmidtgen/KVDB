@@ -1,16 +1,18 @@
-package database
+package database_test
 
 import (
 	"os"
 	"testing"
 	"time"
 
+	"github.com/louiseschmidtgen/KVDB/database"
 	"github.com/stretchr/testify/require"
 )
 
 func TestKeyValueDB(t *testing.T) {
+	t.Parallel() // Indicate that this test can run in parallel
 	// Test InitKeyValueDB
-	db, err := InitKeyValueDB("test.db")
+	db, err := database.InitKeyValueDB("test.db")
 	require.NoError(t, err)
 
 	// Close and remove the database when the function returns
@@ -49,10 +51,11 @@ func TestKeyValueDB(t *testing.T) {
 }
 
 func TestKeyValueDB_NotFound(t *testing.T) {
-	db, err := InitKeyValueDB("test.db")
+	t.Parallel() // Indicate that this test can run in parallel
+	db, err := database.InitKeyValueDB("test2.db")
 	require.NoError(t, err)
 
-	defer os.Remove("test.db")
+	defer os.Remove("test2.db")
 	defer db.Close()
 
 	// Test Get with a non-existent key
