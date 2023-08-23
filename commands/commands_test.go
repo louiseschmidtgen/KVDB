@@ -14,7 +14,7 @@ import (
 
 func TestSetGetCommandWithFlag(t *testing.T) {
 	// Create and initialize a temporary test database
-	db, err := database.InitKeyValueDB("test.db")
+	db, err := database.InitKeyValueDB("test3.db")
 	require.NoError(t, err)
 	defer func() {
 		db.Close()
