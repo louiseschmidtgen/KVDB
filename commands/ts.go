@@ -3,6 +3,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -28,7 +29,7 @@ func TimestampWrapper(cmd *cobra.Command, args []string) {
 	// but I would still like to do error handling so I have added a Wrapper function
 	err := Timestamp(cmd, args)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }
@@ -53,8 +54,8 @@ func Timestamp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("First set at: %s\n", timestamp[0].Format(time.RFC3339))
-	fmt.Printf("Last set at: %s\n", timestamp[len(timestamp)-1].Format(time.RFC3339))
+	log.Printf("First set at: %s\n", timestamp[0].Format(time.RFC3339))
+	log.Printf("Last set at: %s\n", timestamp[len(timestamp)-1].Format(time.RFC3339))
 
 	return nil
 }

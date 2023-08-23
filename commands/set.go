@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/louiseschmidtgen/KVDB/database"
@@ -26,7 +27,7 @@ func SetCmdWrapper(cmd *cobra.Command, args []string) {
 	// but I would still like to do error handling so I have added a Wrapper function
 	err := Set(cmd, args)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }

@@ -3,6 +3,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/louiseschmidtgen/KVDB/database"
@@ -26,7 +27,7 @@ func GetCmdWrapper(cmd *cobra.Command, args []string) {
 	// but I would still like to do error handling so I have added a Wrapper function
 	err := Get(cmd, args)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }
@@ -56,7 +57,7 @@ func Get(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print the value
-	fmt.Printf("Value for '%s': %s\n", key, value)
+	log.Printf("Value for '%s': %s\n", key, value)
 
 	return nil
 }
