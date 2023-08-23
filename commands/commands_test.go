@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSetGetCommandWithFlag(t *testing.T) {
+func TestSetGetDelCommandWithFlag(t *testing.T) {
 	// Create and initialize a temporary test database
 	db, err := database.InitKeyValueDB("test3.db")
 	require.NoError(t, err)
@@ -70,6 +70,26 @@ func TestSetGetCommandWithFlag(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check the content of the outputBuffer for our key and value
-	expectedOutput := "Value for 'greeting': hi"
+	expectedOutput := "Value for '" + key + "': " + value
 	require.Contains(t, stdoutBuffer.String(), expectedOutput)
+
+	cmd = &cobra.Command{
+		Use:   "del",
+		Short: "Delete a key and its associated value",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.Delete(cmd, args)
+		},
+	}
+
+	// Set up test arguments for DeleteCommand
+	cmd.SetArgs(k)
+
+	cmd.Flags().String(filenameFlagName, "test3.db", "Database filename for testing")
+
+	// Execute the DeleteCommand with the filename flag
+	err = cmd.Execute()
+	require.NoError(t, err)
+
+	expectedOutput2 := "Key '" + key + "' deleted"
+	require.Contains(t, stdoutBuffer.String(), expectedOutput2)
 }

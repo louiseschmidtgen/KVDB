@@ -57,5 +57,6 @@ func Delete(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("Key not found")
 	}
 
+	log.Printf("Key '%s' deleted\n", key)
 	return nil
 }
