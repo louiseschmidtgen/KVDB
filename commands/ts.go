@@ -54,8 +54,8 @@ func Timestamp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	log.Printf("First set at: %s\n", timestamp[0].Format(time.RFC3339))
-	log.Printf("Last set at: %s\n", timestamp[len(timestamp)-1].Format(time.RFC3339))
+	fmt.Printf("First set at: %s\n", timestamp[0].Format(time.RFC3339))
+	fmt.Printf("Last set at: %s\n", timestamp[len(timestamp)-1].Format(time.RFC3339))
 
 	return nil
 }
