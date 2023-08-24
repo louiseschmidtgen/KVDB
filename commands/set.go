@@ -1,12 +1,12 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/louiseschmidtgen/KVDB/database"
-
 	"github.com/spf13/cobra"
 )
 
@@ -19,22 +19,23 @@ func NewSetCommand() *cobra.Command {
 
 	// Add an optional filename flag with default value
 	cmd.Flags().String("database", "database/kvdb.db", "Database filename")
+
 	return cmd
 }
 
 func SetCmdWrapper(cmd *cobra.Command, args []string) {
 	// Since you can not pass an error back to a cobra command from a function
 	// but I would still like to do error handling so I have added a Wrapper function
-	err := Set(cmd, args)
-	if err != nil {
+	if err := Set(cmd, args); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
 }
+
 func Set(cmd *cobra.Command, args []string) error {
 	// Check command line arguments
 	if len(args) != 2 {
-		return fmt.Errorf("Usage: kvdb set <key> <value>")
+		return errors.New("usage: kvdb set <key> <value>")
 	}
 
 	key := args[0]
@@ -45,7 +46,7 @@ func Set(cmd *cobra.Command, args []string) error {
 	// Open the database
 	db, err := database.InitKeyValueDB(filename)
 	if err != nil {
-		return fmt.Errorf("error opening database: %s", err)
+		return fmt.Errorf("error opening database: %w", err)
 	}
 
 	// Close the database when the function returns
@@ -54,9 +55,10 @@ func Set(cmd *cobra.Command, args []string) error {
 	// Set the value for the key
 	err = db.Set(key, value)
 	if err != nil {
-		return fmt.Errorf("error setting the value for %s: %v", value, err)
+		return fmt.Errorf("error setting the value for %s: %w", value, err)
 	}
 
 	log.Printf("Key '%s' set to '%s'\n", key, value)
+
 	return nil
 }

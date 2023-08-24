@@ -35,6 +35,7 @@ func TestKeyValueDB(t *testing.T) {
 	// Confirm that the key-vslue pair has been deleted
 	value, err = db.Get("key1")
 	require.ErrorContains(t, err, "not found")
+	require.Equal(t, "", value)
 
 	// Test Timestamp
 	// Create a key-value pair
@@ -47,12 +48,13 @@ func TestKeyValueDB(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, timestamp, 2)                       // Confirm that there are two timestamps
 	require.True(t, timestamp[0].Before(timestamp[1])) // Confirm that the first timestamp is before the second
-
 }
 
 func TestKeyValueDB_NotFound(t *testing.T) {
 	t.Parallel() // Indicate that this test can run in parallel
+
 	db, err := database.InitKeyValueDB("test2.db")
+
 	require.NoError(t, err)
 
 	defer os.Remove("test2.db")
