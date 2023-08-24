@@ -22,12 +22,12 @@ database.
 - Please provide a short write-up of the limitations of your program. (20 lines max).
 - Hand in a tarball containing your project folder and the write-up.
 
-### Write-up:
+# Write-up:
 
-# Datastructure
+### Datastructure
 The datastructure used is a map of maps. The outer map is a map of keys to a map of timestamps to values. The inner map is a map of timestamps to values. The timestamp is a string in the format "YYYY-MM-DD HH:MM:SS.SSS". The value is a string.
 
-# Limitations   
+### Limitations   
 - The usage of file locks for synchronization might introduce performance bottlenecks and contention when multiple processes access the database simultaneously.
 - Concurrent writes from multiple processes can potentially lead to data corruption or overwrites due to the lack of an automated merging mechanism for simultaneous changes.
 - Changes made by one process may not be immediately visible to others reading the database, leading to potential data inconsistency.
@@ -37,12 +37,13 @@ The datastructure used is a map of maps. The outer map is a map of keys to a map
 - The database has no index, so the performance of the get operation will degrade as the number of keys increases.
 - There is a potential for deadlock when multiple processes try to acquire locks on the same keys in different orders.
 - The lack of caching can lead to performance degradation when the database is large.
-- 
+- The database is not distributed, so it cannot be scaled horizontally.
+- The database is not encrypted, so it is not secure.
 
-# Github CI
+### Github CI
 The project is built and tested on Github CI. 
 
-# How to run
+### How to run
 - Clone the repository
 - Run `go build` to build the binary
 - Run `./kvdb` to see the usage instructions
