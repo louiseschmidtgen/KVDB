@@ -40,7 +40,6 @@ func (db *KeyValueDB) load() error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.SetFlags(0)
-			log.Printf("Database file %s does not exist yet\n", db.filename)
 			return nil // KVDB does not exist yet
 		}
 		log.Printf("Error opening database file %s: %v\n", db.filename, err)
