@@ -28,7 +28,16 @@ database.
 The datastructure used is a map of maps. The outer map is a map of keys to a map of timestamps to values. The inner map is a map of timestamps to values. The timestamp is a string in the format "YYYY-MM-DD HH:MM:SS.SSS". The value is a string.
 
 # Limitations   
-- The database is not thread safe. If multiple processes try to access the database at the same time, the database may become corrupted.
+- The usage of file locks for synchronization might introduce performance bottlenecks and contention when multiple processes access the database simultaneously.
+- Concurrent writes from multiple processes can potentially lead to data corruption or overwrites due to the lack of an automated merging mechanism for simultaneous changes.
+- Changes made by one process may not be immediately visible to others reading the database, leading to potential data inconsistency.
+- Some operations (e.g., decoding, encoding) lack comprehensive error handling
+- There is no mechanism to handle database corruption or crashes.
+- A lack of version control for the database can lead to data loss in case of accidental overwrites or deletions. There is no option to revert to a previous version of the database.
+- The database has no index, so the performance of the get operation will degrade as the number of keys increases.
+- There is a potential for deadlock when multiple processes try to acquire locks on the same keys in different orders.
+- The lack of caching can lead to performance degradation when the database is large.
+- 
 
 # Github CI
 The project is built and tested on Github CI. 
