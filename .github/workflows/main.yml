@@ -52,12 +52,10 @@ jobs:
 
       - name: Install tools
         run: |
-          go get golang.org/x/tools/cmd/gofmt
-          go install golang.org/x/tools/cmd/gofmt
-          go get github.com/golangci/golangci-lint/cmd/golangci-lint
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint
           go get mvdan.cc/gofumpt/gofumports
           go install mvdan.cc/gofumpt/gofumports
+          go get github.com/golangci/golangci-lint/cmd/golangci-lint
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
       - name: Format code
         run: gofumports -w -l -local ./ .
