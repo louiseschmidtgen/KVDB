@@ -46,8 +46,8 @@ The project is built and tested on Github CI.
 ### How to run
 - Clone the repository
 - Run `go build` to build the binary
-- Run `kvdb` to see the usage instructions
-- Run `kvdb set key value` to set a key value pair
-- Run `kvdb get key` to get the value for a key
-- Run `kvdb del key` to delete a key
-- Run `kvdb ts key` to get the timestamp for a key
+- Run `./kvdb` to see the usage instructions
+- Run `./kvdb set key value` to set a key value pair
+- Run `./kvdb get key` to get the value for a key
+- Run `./kvdb del key` to delete a key
+- Run `./kvdb ts key` to get the timestamp for a key
