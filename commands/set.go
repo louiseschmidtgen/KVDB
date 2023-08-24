@@ -18,7 +18,7 @@ func NewSetCommand() *cobra.Command {
 	}
 
 	// Add an optional filename flag with default value
-	cmd.Flags().String("filename", "database/kvdb.db", "Database filename")
+	cmd.Flags().String("database", "database/kvdb.db", "Database filename")
 	return cmd
 }
 
