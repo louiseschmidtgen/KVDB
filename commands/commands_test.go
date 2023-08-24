@@ -12,24 +12,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testDB *database.KeyValueDB
-var key = "greeting"
-var value = "hi"
-var filenameFlagName = "database"
+const (
+	key              = "greeting"
+	value            = "hi"
+	filenameFlagName = "database"
+)
 
 func TestMain(m *testing.M) {
 	// Set up the test database once
 	db, err := database.InitKeyValueDB("test3.db")
 	if err != nil {
-		log.Fatalf("Error initializing test database: %v", err)
+		log.Fatalf("error initializing test database: %v", err)
 	}
-	testDB = db
 
 	// Run all the tests
 	code := m.Run()
 
 	// Clean up after all tests are done
-	testDB.Close()
+	db.Close()
 	os.Remove("test3.db")
 
 	// Exit with the test result code
@@ -37,6 +37,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestCommandsWithFlag(t *testing.T) {
+	t.Parallel() // Run this test in parallel
 	t.Run("SetCommand", testSetCommand)
 	t.Run("TSCommand", testTSCommand)
 	t.Run("GetCommand", testGetCommand)
@@ -91,20 +92,8 @@ func testTSCommand(t *testing.T) {
 	err := cmd.Execute()
 	require.NoError(t, err)
 
-	expectedOutput3 := "First set at:"
-	expectedOutput4 := "Last set at:"
-	require.Contains(t, stdoutBuffer.String(), expectedOutput3)
-	require.Contains(t, stdoutBuffer.String(), expectedOutput4)
-
-	// Initialize the GetCommand
-	cmd = &cobra.Command{
-		Use:   "set",
-		Short: "Set a key-value pair",
-		Run: func(cmd *cobra.Command, args []string) {
-			commands.Get(cmd, args)
-		},
-	}
-
+	require.Contains(t, stdoutBuffer.String(), "First set at:")
+	require.Contains(t, stdoutBuffer.String(), "Last set at:")
 }
 
 func testGetCommand(t *testing.T) {
@@ -172,28 +161,55 @@ func testDelCommand(t *testing.T) {
 }
 
 func TestCommandCreation(t *testing.T) {
-	t.Run("SetCommand", testSetCommandCreation)
-	t.Run("TSCommand", testTSCommandCreation)
-	t.Run("GetCommand", testGetCommandCreation)
-	t.Run("DelCommand", testDelCommandCreation)
+	t.Parallel() // Run this test in parallel
+	t.Run("SetCommand", func(t *testing.T) {
+		t.Parallel() // Run this subtest in parallel
+		testSetCommandCreation(t)
+	})
+
+	t.Run("TSCommand", func(t *testing.T) {
+		t.Parallel() // Run this subtest in parallel
+		testTSCommandCreation(t)
+	})
+
+	t.Run("GetCommand", func(t *testing.T) {
+		t.Parallel() // Run this subtest in parallel
+		testGetCommandCreation(t)
+	})
+
+	t.Run("DelCommand", func(t *testing.T) {
+		t.Parallel() // Run this subtest in parallel
+		testDelCommandCreation(t)
+	})
 }
 
 func testSetCommandCreation(t *testing.T) {
+	t.Helper() // Add this line to tell the test framework that this is a helper function
+
 	cmd := commands.NewSetCommand()
 	require.Equal(t, "set", cmd.Use)
 	require.Equal(t, "Set a key-value pair", cmd.Short)
 }
+
 func testTSCommandCreation(t *testing.T) {
+	t.Helper()
+
 	cmd := commands.NewTimestampCommand()
 	require.Equal(t, "ts", cmd.Use)
 	require.Equal(t, "Get the timestamp of a key", cmd.Short)
 }
+
 func testGetCommandCreation(t *testing.T) {
+	t.Helper()
+
 	cmd := commands.NewGetCommand()
 	require.Equal(t, "get", cmd.Use)
 	require.Equal(t, "Get a key-value pair", cmd.Short)
 }
+
 func testDelCommandCreation(t *testing.T) {
+	t.Helper()
+
 	cmd := commands.NewDeleteCommand()
 	require.Equal(t, "del", cmd.Use)
 	require.Equal(t, "Delete a key and its associated value", cmd.Short)

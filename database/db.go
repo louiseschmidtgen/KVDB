@@ -42,51 +42,54 @@ func (db *KeyValueDB) load() error {
 			log.Printf("Database file %s does not exist yet\n", db.filename)
 			return nil // KVDB does not exist yet
 		}
-		log.Printf("Error opening database file %s: %v\n", db.filename, err)
+
+		log.Printf("error opening database file %s: %v\n", db.filename, err)
+
 		return err
 	}
 	defer file.Close()
 
 	// Lock the file for reading
 	if err := syscall.Flock(int(file.Fd()), syscall.LOCK_SH); err != nil {
-		log.Printf("Error locking file %s for reading: %v\n", db.filename, err)
+		log.Printf("error locking file %s for reading: %v\n", db.filename, err)
 		return err
 	}
 	defer syscall.Flock(int(file.Fd()), syscall.LOCK_UN) // Unlock when done
 
 	// decode the database file
 	decoder := gob.NewDecoder(file)
+
 	err = decoder.Decode(&db.data)
 	if err != nil {
-		log.Printf("Error decoding data from %s: %v\n", db.filename, err)
+		log.Printf("error decoding data from %s: %v\n", db.filename, err)
 		return err
 	}
 
 	return nil
-
 }
 
 func (db *KeyValueDB) save() error {
 	// open the database file
 	file, err := os.Create(db.filename)
 	if err != nil {
-		log.Printf("Error creating file %s: %v\n", db.filename, err)
+		log.Printf("error creating file %s: %v\n", db.filename, err)
 		return err
 	}
 	defer file.Close()
 
 	// Lock the file for writing
 	if err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX); err != nil {
-		log.Printf("Error locking file %s for writing: %v\n", db.filename, err)
+		log.Printf("error locking file %s for writing: %v\n", db.filename, err)
 		return err
 	}
 	defer syscall.Flock(int(file.Fd()), syscall.LOCK_UN) // Unlock when done
 
 	// encode the database file
 	encoder := gob.NewEncoder(file)
+
 	err = encoder.Encode(db.data)
 	if err != nil {
-		log.Printf("Error encoding data to %s: %v\n", db.filename, err)
+		log.Printf("error encoding data to %s: %v\n", db.filename, err)
 		return err
 	}
 
@@ -106,6 +109,7 @@ func (db *KeyValueDB) Set(key, value string) error {
 
 	// save the database
 	db.save()
+
 	return nil
 }
 
@@ -118,7 +122,7 @@ func (db *KeyValueDB) Get(key string) (string, error) {
 	dbEntry, found := db.data[key]
 	if !found {
 		log.Printf("Key %s not found\n", key)
-		return "", fmt.Errorf("Key %s not found", key)
+		return "", fmt.Errorf("key %s not found", key)
 	}
 
 	return dbEntry.Value, nil
@@ -146,11 +150,10 @@ func (db *KeyValueDB) Timestamp(key string) ([]time.Time, error) {
 	DBEntry, found := db.data[key]
 	if !found {
 		log.Printf("Key %s not found\n", key)
-		return nil, fmt.Errorf("Key %s not found", key)
+		return nil, fmt.Errorf("key %s not found", key)
 	}
 
 	return DBEntry.Timestamp, nil
-
 }
 
 func (db *KeyValueDB) Close() error {

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{Use: "kvdb"}
+	rootCmd := &cobra.Command{Use: "kvdb"}
 
 	rootCmd.AddCommand(commands.NewSetCommand())
 	rootCmd.AddCommand(commands.NewGetCommand())

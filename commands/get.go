@@ -2,6 +2,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -19,14 +20,14 @@ func NewGetCommand() *cobra.Command {
 
 	// Add an optional database flag with default value
 	cmd.Flags().String("database", "database/kvdb.db", "Database filename")
+
 	return cmd
 }
 
 func GetCmdWrapper(cmd *cobra.Command, args []string) {
 	// Since you can not pass an error back to a cobra command from a function
 	// but I would still like to do error handling so I have added a Wrapper function
-	err := Get(cmd, args)
-	if err != nil {
+	if err := Get(cmd, args); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
@@ -35,7 +36,7 @@ func GetCmdWrapper(cmd *cobra.Command, args []string) {
 func Get(cmd *cobra.Command, args []string) error {
 	// Check command line arguments
 	if len(args) != 1 {
-		return fmt.Errorf("Usage: kvdb get <key>")
+		return errors.New("usage: kvdb get <key>")
 	}
 
 	key := args[0]
@@ -44,7 +45,7 @@ func Get(cmd *cobra.Command, args []string) error {
 	// Open the database
 	db, err := database.InitKeyValueDB(filename)
 	if err != nil {
-		return fmt.Errorf("Error opening database: %v", err)
+		return fmt.Errorf("error opening database: %w", err)
 	}
 
 	// Close the database when the function returns

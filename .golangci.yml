@@ -4,3 +4,12 @@ linters:
     - errcheck
     - depguard
     - varnamelen
+    - nosnakecase
+    - tparallel
+    - paralleltest
+    - goerr113
+    - wrapcheck
+    - nlreturn
+    - gomnd
+    - exhaustivestruct
+    - exhaustruct
