@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 
 	"github.com/spf13/cobra"
 )
@@ -57,6 +57,7 @@ func Set(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error setting the value for %s: %v", value, err)
 	}
 
+	log.SetFlags(0)
 	log.Printf("Key '%s' set to '%s'\n", key, value)
 	return nil
 }

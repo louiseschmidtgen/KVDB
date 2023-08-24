@@ -1,4 +1,4 @@
-module github.com/louiseschmidtgen/KVDB
+module github.com/louiseschmidtgen/kvdb
 
 go 1.20
 

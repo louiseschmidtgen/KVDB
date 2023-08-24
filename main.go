@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/louiseschmidtgen/KVDB/commands"
+	"github.com/louiseschmidtgen/kvdb/commands"
 	"github.com/spf13/cobra"
 )
 

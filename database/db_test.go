@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 	"github.com/stretchr/testify/require"
 )
 

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ func NewDeleteCommand() *cobra.Command {
 func GetDelWrapper(cmd *cobra.Command, args []string) {
 	// Since you can not pass an error back to a cobra command from a function
 	// but I would still like to do error handling so I have added a Wrapper function
-	err := Get(cmd, args)
+	err := Delete(cmd, args)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -57,6 +57,7 @@ func Delete(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("Key not found")
 	}
 
+	log.SetFlags(0)
 	log.Printf("Key '%s' deleted\n", key)
 	return nil
 }

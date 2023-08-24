@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 	"github.com/spf13/cobra"
 )
 
@@ -57,6 +57,7 @@ func Get(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print the value
+	log.SetFlags(0)
 	log.Printf("Value for '%s': %s\n", key, value)
 
 	return nil

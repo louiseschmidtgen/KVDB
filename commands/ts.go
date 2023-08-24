@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 
 	"github.com/spf13/cobra"
 )
@@ -54,6 +54,7 @@ func Timestamp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	log.SetFlags(0)
 	log.Printf("First set at: %s\n", timestamp[0].Format(time.RFC3339))
 	log.Printf("Last set at: %s\n", timestamp[len(timestamp)-1].Format(time.RFC3339))
 

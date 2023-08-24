@@ -39,6 +39,7 @@ func (db *KeyValueDB) load() error {
 	file, err := os.Open(db.filename)
 	if err != nil {
 		if os.IsNotExist(err) {
+			log.SetFlags(0)
 			log.Printf("Database file %s does not exist yet\n", db.filename)
 			return nil // KVDB does not exist yet
 		}
@@ -117,8 +118,7 @@ func (db *KeyValueDB) Get(key string) (string, error) {
 	// get the value for the key
 	dbEntry, found := db.data[key]
 	if !found {
-		log.Printf("Key %s not found\n", key)
-		return "", fmt.Errorf("Key %s not found", key)
+		return "", fmt.Errorf("key %s not found", key)
 	}
 
 	return dbEntry.Value, nil
@@ -145,7 +145,6 @@ func (db *KeyValueDB) Timestamp(key string) ([]time.Time, error) {
 	// get the value for the key
 	DBEntry, found := db.data[key]
 	if !found {
-		log.Printf("Key %s not found\n", key)
 		return nil, fmt.Errorf("Key %s not found", key)
 	}
 
