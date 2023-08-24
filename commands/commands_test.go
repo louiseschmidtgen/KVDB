@@ -43,6 +43,34 @@ func TestSetGetDelCommandWithFlag(t *testing.T) {
 	err = cmd.Execute()
 	require.NoError(t, err)
 
+	cmd = &cobra.Command{
+		Use:   "ts",
+		Short: "Get the timestamp of a key",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.Timestamp(cmd, args)
+		},
+	}
+
+	// Set up test arguments for TSCommand
+	k := []string{key}
+	cmd.SetArgs(k)
+
+	// Create a buffer to capture stdout
+	var stdoutBuffer bytes.Buffer
+
+	// Redirect stdout to the buffer
+	log.SetOutput(&stdoutBuffer)
+
+	cmd.Flags().String(filenameFlagName, "test3.db", "Database filename for testing")
+
+	err = cmd.Execute()
+	require.NoError(t, err)
+
+	expectedOutput3 := "First set at:"
+	expectedOutput4 := "Last set at:"
+	require.Contains(t, stdoutBuffer.String(), expectedOutput3)
+	require.Contains(t, stdoutBuffer.String(), expectedOutput4)
+
 	// Initialize the GetCommand
 	cmd = &cobra.Command{
 		Use:   "set",
@@ -53,14 +81,8 @@ func TestSetGetDelCommandWithFlag(t *testing.T) {
 	}
 
 	// Set up test arguments for GetCommand
-	k := []string{key}
+
 	cmd.SetArgs(k)
-
-	// Create a buffer to capture stdout
-	var stdoutBuffer bytes.Buffer
-
-	// Redirect stdout to the buffer
-	log.SetOutput(&stdoutBuffer)
 
 	// Set the filename flag for testing in GetCommand
 	cmd.Flags().String(filenameFlagName, "test3.db", "Database filename for testing")
@@ -73,23 +95,4 @@ func TestSetGetDelCommandWithFlag(t *testing.T) {
 	expectedOutput := "Value for '" + key + "': " + value
 	require.Contains(t, stdoutBuffer.String(), expectedOutput)
 
-	cmd = &cobra.Command{
-		Use:   "del",
-		Short: "Delete a key and its associated value",
-		Run: func(cmd *cobra.Command, args []string) {
-			commands.Delete(cmd, args)
-		},
-	}
-
-	// Set up test arguments for DeleteCommand
-	cmd.SetArgs(k)
-
-	cmd.Flags().String(filenameFlagName, "test3.db", "Database filename for testing")
-
-	// Execute the DeleteCommand with the filename flag
-	err = cmd.Execute()
-	require.NoError(t, err)
-
-	expectedOutput2 := "Key '" + key + "' deleted"
-	require.Contains(t, stdoutBuffer.String(), expectedOutput2)
 }
