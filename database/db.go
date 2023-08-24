@@ -39,7 +39,6 @@ func (db *KeyValueDB) load() error {
 	file, err := os.Open(db.filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.SetFlags(0)
 			return nil // KVDB does not exist yet
 		}
 		log.Printf("Error opening database file %s: %v\n", db.filename, err)
