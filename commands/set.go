@@ -57,6 +57,7 @@ func Set(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error setting the value for %s: %v", value, err)
 	}
 
+	log.SetFlags(0)
 	log.Printf("Key '%s' set to '%s'\n", key, value)
 	return nil
 }

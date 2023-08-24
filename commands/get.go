@@ -57,6 +57,7 @@ func Get(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print the value
+	log.SetFlags(0)
 	log.Printf("Value for '%s': %s\n", key, value)
 
 	return nil
