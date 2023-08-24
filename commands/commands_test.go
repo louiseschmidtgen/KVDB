@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/louiseschmidtgen/KVDB/commands"
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/commands"
+	"github.com/louiseschmidtgen/kvdb/database"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )

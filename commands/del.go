@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/louiseschmidtgen/KVDB/database"
+	"github.com/louiseschmidtgen/kvdb/database"
 
 	"github.com/spf13/cobra"
 )
